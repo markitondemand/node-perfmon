@@ -1,0 +1,20 @@
+{
+	"name": "perfmon",
+	"description": "Windows perfmon metrics stream",
+	"version": "0.1.1a",
+	"author": "Ben Taber (ben.taber@markit.com)",
+	"keywords": "perfmon logman typeperf win32 windows metrics stream monitor performance",
+
+	"main": "./perfmon.js",
+
+	"dependencies": {
+	},
+
+	"devDependencies": {
+		"vows": "~0.5.13"
+	},
+
+	"engines": {
+		"node": ">=0.5.4"
+	}
+}
