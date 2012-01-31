@@ -1,20 +1,22 @@
 {
 	"name": "perfmon",
-	"description": "Windows perfmon metrics stream",
-	"version": "0.1.1a",
+	"version": "0.1.1",
 	"author": "Ben Taber (ben.taber@markit.com)",
+
+	"description": "Windows perfmon metrics stream",
 	"keywords": "perfmon logman typeperf win32 windows metrics stream monitor performance",
+
+	"homepage": "https://github.com/markitondemand/node-perfmon",
+	"bugs": "https://github.com/markitondemand/node-perfmon/issues",
 
 	"main": "./perfmon.js",
 
-	"dependencies": {
-	},
-
-	"devDependencies": {
-		"vows": "~0.5.13"
+	"repository": { 
+		"type" : "git",
+		"url" : "https://github.com/markitondemand/node-perfmon.git"
 	},
 
 	"engines": {
-		"node": ">=0.5.4"
+		"node": ">=0.6.0"
 	}
 }
