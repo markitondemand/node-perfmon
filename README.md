@@ -14,7 +14,7 @@ git clone https://github.com/markitondemand/node-perfmon
 # Usage
 
 ```
-var perfmon = require('node-perfmon');
+var perfmon = require('perfmon');
 
 perfmon('\\processor(_total)\\% processor time', function(err, data) {
 	console.log(data);
