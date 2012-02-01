@@ -1,6 +1,6 @@
 {
 	"name": "perfmon",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"author": "Ben Taber (ben.taber@markit.com)",
 
 	"description": "Windows perfmon metrics stream",
