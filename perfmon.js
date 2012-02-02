@@ -14,7 +14,7 @@ function shallowArrayEquals(a, b) {
 	b.sort();
 
 	for (var i=0; i<a.length; i++) {
-		if (a[i].toLowerCase() != b[i].toLowerCase()) {
+		if (a[i] != b[i]) {
 			return;
 		}
 	}
@@ -149,7 +149,7 @@ perfmon(options, cb)
 
 function perfmon() {
 	var inputs = parseInputs(arguments);
-	var pstream = new PerfmonStream();
+	var pstream = new PerfmonStream(inputs.options.counters);
 
 	if (typeof(inputs.cb) == 'function') {
 		pstream.on('data', function(data) {
@@ -179,21 +179,12 @@ perfmon.list(counterFamily, cb)
 perfmon.list(counterFamily, hosts, cb)
 */
 
-perfmon.list = function(counter, host, cb) {
-	// arg parsing here too? not today.
-	var pstream = new PerfmonStream();
+perfmon.list = function() {
+	var inputs = parseInputs(arguments);
+	var pstream = new PerfmonStream(inputs.options.counters);
 
-	if (arguments.length == 2 && typeof(host) == 'function') {
-		cb = host;
-		host = null;
-	}
-
-	if (!host) {
-		host = [os.hostname()];
-	}
-
-	host.forEach(function(host) {
-		TypePerf.listCounters(counter, host, function(err, data) {
+	inputs.options.hosts.forEach(function(host) {
+		TypePerf.listCounters(inputs.options.counters, host, function(err, data) {
 			if (err) {
 				pstream.emit('error', err);
 			}
@@ -203,11 +194,17 @@ perfmon.list = function(counter, host, cb) {
 		});
 	});
 
-	if (cb) {
+	if (typeof(inputs.cb) == 'function') {
 		pstream.on('data', function(data) {
 			cb(null, data);
 		});
 		pstream.on('error', cb);
+	}
+
+	if (inputs.options.error) {
+		process.nextTick(function() {
+			pstream.emit('error', inputs.options.error);
+		});
 	}
 
 	return pstream;
