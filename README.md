@@ -21,54 +21,64 @@ The most basic usage is to stream a single metric from the local machine.  The `
 
 The first two arguments to perfmon, `counters` and `hosts`, can be strings or arrays.  `hosts` is optional and assumed to be local machine if not specified.
 
-	var perfmon = require('perfmon');
+```javascript
+var perfmon = require('perfmon');
 
-	perfmon('\\processor(_total)\\% processor time', function(err, data) {
-		console.log(data);
-	});
+perfmon('\\processor(_total)\\% processor time', function(err, data) {
+	console.log(data);
+});
+```
 
 The `data` object logged to the console:
 
-	{ host: 'yourcomputer',
-	  time: 1328067580990, // UTC timestamp in ms
-	  counters:
-	  { '\\processor(_total)\\% processor time': 17 }
-	}
+```javascript
+{ host: 'yourcomputer',
+  time: 1328067580990, // UTC timestamp in ms
+  counters:
+  { '\\processor(_total)\\% processor time': 17 }
+}
+```
 
 ### List available metric counters
 
 Use `list` to return a, um, list of available counters.
 
-	perfmon.list('memory', function(err, data) {
-		console.log(data);
-	});
+```javascript
+perfmon.list('memory', function(err, data) {
+	console.log(data);
+});
+```
 
 The `data` object logged to the console:
 
-	{ counters:
-	  [ 'memory\\Page Faults/sec',
-	    'memory\\Available Bytes',
-	    'memory\\Committed Bytes',
-	    ... omitted for brevity ...
-	    'memory\\Available KBytes',
-	    'memory\\Available MBytes',
-	    'memory\\Transition Pages RePurposed/sec',
-	    'memory\\Free & Zero Page List Bytes',
-	    'memory\\Modified Page List Bytes',
-	    'memory\\Standby Cache Reserve Bytes',
-	    'memory\\Standby Cache Normal Priority Bytes',
-	    'memory\\Standby Cache Core Bytes' ],
-	host: 'yourcomputer' }
+```javascript
+{ counters:
+  [ 'memory\\Page Faults/sec',
+    'memory\\Available Bytes',
+    'memory\\Committed Bytes',
+    // ... omitted for brevity ...
+    'memory\\Available KBytes',
+    'memory\\Available MBytes',
+    'memory\\Transition Pages RePurposed/sec',
+    'memory\\Free & Zero Page List Bytes',
+    'memory\\Modified Page List Bytes',
+    'memory\\Standby Cache Reserve Bytes',
+    'memory\\Standby Cache Normal Priority Bytes',
+    'memory\\Standby Cache Core Bytes' ],
+host: 'yourcomputer' }
+```
 
 ### Stream remote host metrics
 
 You can connect to any host on your network and stream metrics from that machine. 
 
-	var counters = [
-		'\\processor(_total)\\% processor time',
-		'\\memory\\available bytes',
-	];
+```javascript
+var counters = [
+	'\\processor(_total)\\% processor time',
+	'\\memory\\available bytes',
+];
 
-	perfmon(counters, 'somecomputer.somewhere.local', function(err, data) {
-		console.log(data);
-	});
+perfmon(counters, 'somecomputer.somewhere.local', function(err, data) {
+	console.log(data);
+});
+```
