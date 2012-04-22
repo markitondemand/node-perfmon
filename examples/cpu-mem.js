@@ -2,9 +2,9 @@ var perfmon = require('perfmon');
 
 var counters = [
 	'\\processor(_total)\\% processor time',
-	'\\Memory\\Available bytes',
+	'\\Memory\\Available bytes'
 ];
 
 perfmon(counters, function(err, data) {
-	console.warn(data);	
+	console.log(data);	
 });

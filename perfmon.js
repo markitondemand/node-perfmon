@@ -5,21 +5,11 @@ var PerfmonStream = require('./lib/PerfmonStream');
 var hosts = {};
 var hostname = os.hostname();
 
-function shallowArrayEquals(a, b) {
-	if (a.length != b.length) {
-		return;
-	}
-
-	a.sort();
-	b.sort();
-
-	for (var i=0; i<a.length; i++) {
-		if (a[i] != b[i]) {
-			return;
-		}
-	}
-
-	return true;
+function subset(a, b) {
+	// is b a subset of a?
+	return b.every(function(value) {
+		return (a.indexOf(value) != -1);
+	});
 }
 
 function stringOrArrayToArray(value) {
@@ -34,37 +24,24 @@ function stringOrArrayToArray(value) {
  	return false;
 }
 
-function attach(typeperf, pstream) {
-	// piping assumes errors are fatal
-	// they are ok if we're streaming multiple
-	// hosts and only one child process fails
-	// typeperf.pipe(pstream);
-
-	typeperf.on('data', function(data) {
-		pstream.write(data);
-	});
-
-	typeperf.on('error', function(err) {
-		pstream.emit('error', err);
-	});
-}
-
 function init(host, options, pstream) {
-	var typeperf;
+	var typePerf;
 
 	if (!hosts[host]) {
 		hosts[host] = new TypePerf(host);
 	}
 
-	typeperf = hosts[host];
-	attach(typeperf, pstream);
+	typePerf = hosts[host];
+	pstream.attach(typePerf);
 
-	if (!shallowArrayEquals(options.counters, typeperf.counters())) {
-		typeperf.counters(typeperf.counters().concat(options.counters));
-		typeperf.spawn();
+	// this is wrong. if the current typeperf ALREADY contains the new
+	// counters, you should not do anything!
+	if (!subset(typePerf.counters(), options.counters)) {
+		typePerf.counters(typePerf.counters().concat(options.counters));
+		typePerf.spawn();
 	}
-	else if (!typeperf.cp) {
-		typeperf.spawn();
+	else if (!typePerf.cp) {
+		typePerf.spawn();
 	}
 }
 
@@ -181,7 +158,8 @@ perfmon.list(counterFamily, hosts, cb)
 
 perfmon.list = function() {
 	var inputs = parseInputs(arguments);
-	var pstream = new PerfmonStream(inputs.options.counters);
+	// dont pass counters for list, no need to filter anything
+	var pstream = new PerfmonStream();
 
 	inputs.options.hosts.forEach(function(host) {
 		TypePerf.listCounters(inputs.options.counters, host, function(err, data) {
@@ -189,16 +167,16 @@ perfmon.list = function() {
 				pstream.emit('error', err);
 			}
 			else {
-				pstream.write(data);	
+				pstream.write(data);
 			}
 		});
 	});
 
 	if (typeof(inputs.cb) == 'function') {
 		pstream.on('data', function(data) {
-			cb(null, data);
+			inputs.cb(null, data);
 		});
-		pstream.on('error', cb);
+		pstream.on('error', inputs.cb);
 	}
 
 	if (inputs.options.error) {
@@ -211,14 +189,14 @@ perfmon.list = function() {
 };
 
 perfmon.stop = function(host) {
-	each(host, function(typeperf) {
-		typeperf.kill();
+	each(host, function(typePerf) {
+		typePerf.kill();
 	});
 };
 
 perfmon.start = function(host) {
-	each(host, function(typeperf) {
-		typeperf.spawn();
+	each(host, function(typePerf) {
+		typePerf.spawn();
 	});
 };
 
