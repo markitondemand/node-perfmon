@@ -1,6 +1,6 @@
 {
 	"name": "perfmon",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"author": "Ben Taber (ben.taber@markit.com)",
 
 	"description": "Windows perfmon metrics stream",
@@ -16,7 +16,13 @@
 		"url" : "https://github.com/markitondemand/node-perfmon.git"
 	},
 
+	"os": ["win32"],
+
 	"engines": {
 		"node": ">=0.6.0"
+	},
+
+	"scripts": {
+		"test": "node test/test.js"
 	}
 }
