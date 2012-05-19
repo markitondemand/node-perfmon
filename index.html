@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Node-perfmon by markitondemand</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Node-perfmon</h1>
+        <p>Streaming performance metrics for Node on Windows</p>
+        <p class="view"><a href="https://github.com/markitondemand/node-perfmon">View the Project on GitHub <small>markitondemand/node-perfmon</small></a></p>
+        <ul>
+          <li><a href="https://github.com/markitondemand/node-perfmon/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/markitondemand/node-perfmon/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/markitondemand/node-perfmon">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>perfmon</h1>
+
+<p>Streaming <a href="http://technet.microsoft.com/en-us/library/cc749249.aspx">Performance Monitor</a> metrics for <a href="http://nodejs.org">Node</a> on Windows.</p>
+
+<p><a href="http://markitondemand.github.com/node-perfmon">node-perfmon</a> is a thin wrapper around <a href="http://technet.microsoft.com/en-us/library/bb490960.aspx">typeperf</a>, and provides a <a href="http://nodejs.org/docs/latest/api/streams.html#readable_Stream">ReadableStream</a> interface to the typeperf output.  Metrics are streamed once per second.  <code>perfmon</code> wraps up the typeperf executable as a child_process. It ensures that no more than one process will be spawned for each host machine streaming metrics.</p>
+
+<h3>Dependenices</h3>
+
+<p>Node, Windows, and the typeperf executable in your path.  I've never seen a Windows installation that didn't have it, but it's not out of the realm of possibility.  Windows For Workgroups 3.11 had it. <em>Maybe.</em> Definitely NT4 and up.</p>
+
+<p>Only the machine running Node needs Node. Makes perfect sense.  The only requirements to stream metrics from a remote machine are Windows running on that machine, and appropriate permissions to do so.</p>
+
+<h2>Install</h2>
+
+<pre><code>npm install perfmon
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>The most basic usage is to stream a single metric from the local machine.  The <code>perfmon</code> function returns an instance of a ReadableStream.  You can either pass a callback as the last argument, or attach to the <code>data</code> and <code>error</code> events on the returned Stream.</p>
+
+<p>The first two arguments to perfmon, <code>counters</code> and <code>hosts</code>, can be strings or arrays.  <code>hosts</code> is optional and assumed to be local machine if not specified.</p>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">perfmon</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'perfmon'</span><span class="p">);</span>
+
+<span class="nx">perfmon</span><span class="p">(</span><span class="s1">'\\processor(_total)\\% processor time'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<p>The <code>data</code> object logged to the console:</p>
+
+<div class="highlight">
+<pre><span class="p">{</span> <span class="nx">host</span><span class="o">:</span> <span class="s1">'yourcomputer'</span><span class="p">,</span>
+  <span class="nx">time</span><span class="o">:</span> <span class="mi">1328067580990</span><span class="p">,</span> <span class="c1">// UTC timestamp in ms</span>
+  <span class="nx">counters</span><span class="o">:</span>
+  <span class="p">{</span> <span class="s1">'\\processor(_total)\\% processor time'</span><span class="o">:</span> <span class="mi">17</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+</div>
+
+
+<h3>List available metric counters</h3>
+
+<p>Use <code>list</code> to return a, um, list of available counters.</p>
+
+<div class="highlight">
+<pre><span class="nx">perfmon</span><span class="p">.</span><span class="nx">list</span><span class="p">(</span><span class="s1">'memory'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<p>The <code>data</code> object logged to the console:</p>
+
+<div class="highlight">
+<pre><span class="p">{</span> <span class="nx">counters</span><span class="o">:</span>
+  <span class="p">[</span> <span class="s1">'memory\\Page Faults/sec'</span><span class="p">,</span>
+    <span class="s1">'memory\\Available Bytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Committed Bytes'</span><span class="p">,</span>
+    <span class="c1">// ... omitted for brevity ...</span>
+    <span class="s1">'memory\\Available KBytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Available MBytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Transition Pages RePurposed/sec'</span><span class="p">,</span>
+    <span class="s1">'memory\\Free &amp; Zero Page List Bytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Modified Page List Bytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Standby Cache Reserve Bytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Standby Cache Normal Priority Bytes'</span><span class="p">,</span>
+    <span class="s1">'memory\\Standby Cache Core Bytes'</span> <span class="p">],</span>
+<span class="nx">host</span><span class="o">:</span> <span class="s1">'yourcomputer'</span> <span class="p">}</span>
+</pre>
+</div>
+
+
+<h3>Stream remote host metrics</h3>
+
+<p>You can connect to any host on your network and stream metrics from that machine. </p>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">counters</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'\\processor(_total)\\% processor time'</span><span class="p">,</span>
+    <span class="s1">'\\memory\\available bytes'</span><span class="p">,</span>
+<span class="p">];</span>
+
+<span class="nx">perfmon</span><span class="p">(</span><span class="nx">counters</span><span class="p">,</span> <span class="s1">'somecomputer.somewhere.local'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/markitondemand">markitondemand</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
