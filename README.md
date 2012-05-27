@@ -40,7 +40,7 @@ The `data` object logged to the console:
 
 ### List available metric counters
 
-Use `list` to return a, um, list of available counters.
+Use `list` to return a, um, list of available counters.  To get a sense of all of the counters available on the machine, either open up the perfmon executable, or run `typeperf -qx > out.txt`.
 
 ```javascript
 perfmon.list('memory', function(err, data) {
