@@ -1,19 +1,18 @@
 {
-	"name": "perfmon",
-	"version": "0.2.1",
-	"author": "Ben Taber (ben.taber@markit.com)",
+	"name": "node-perfmon-dh",
+	"version": "0.3.1",
+	"author": "David Hibshman (davehibshman@gmail.com)",
 
 	"description": "Windows perfmon metrics stream",
 	"keywords": "perfmon logman typeperf win32 windows metrics stream monitor performance",
 
-	"homepage": "https://github.com/markitondemand/node-perfmon",
-	"bugs": "https://github.com/markitondemand/node-perfmon/issues",
+	"homepage": "https://github.com/davehibshman/node-perfmon-dh",
 
 	"main": "./perfmon.js",
 
 	"repository": { 
 		"type" : "git",
-		"url" : "https://github.com/markitondemand/node-perfmon.git"
+		"url" : "https://github.com/davehibshman/node-perfmon-dh.git"
 	},
 
 	"os": ["win32"],
