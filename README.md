@@ -1,8 +1,10 @@
-# perfmon
+# node-perfmon-dh
 
 Streaming [Performance Monitor](http://technet.microsoft.com/en-us/library/cc749249.aspx) metrics for [Node](http://nodejs.org) on Windows.
 
-[node-perfmon](http://markitondemand.github.com/node-perfmon) is a thin wrapper around [typeperf](http://technet.microsoft.com/en-us/library/bb490960.aspx), and provides a [ReadableStream](http://nodejs.org/docs/latest/api/streams.html#readable_Stream) interface to the typeperf output.  Metrics are streamed once per second.  `perfmon` wraps up the typeperf executable as a child_process. It ensures that no more than one process will be spawned for each host machine streaming metrics.
+[node-perfmon-dh](https://github.com/davehibshman/node-perfmon-dh) is a fork of [node-perfmon](http://markitondemand.github.com/node-perfmon).  I forked that repo and submitted pull requests for functionality I previously requested be added.  It doesn't look like the owner is maintaining it anymore, so I published my fork.  If the original is maintained, then I will remove this one.  Most of this README is a copy of the original with a few changes supporting the reasons I forked it.  
+
+[node-perfmon](http://markitondemand.github.com/node-perfmon) is a thin wrapper around MS Windows [typeperf](http://technet.microsoft.com/en-us/library/bb490960.aspx) command that provides a [ReadableStream](http://nodejs.org/docs/latest/api/streams.html#readable_Stream) interface to the typeperf command output.  `perfmon` wraps up the typeperf executable as a child_process. It ensures that no more than one process will be spawned for each host machine streaming metrics.
 
 ### Dependenices
 
@@ -27,6 +29,17 @@ perfmon('\\processor(_total)\\% processor time', function(err, data) {
 	console.log(data);
 });
 ```
+
+Perfmon can also be called with an options object instead of the counters and hosts args.  This options object supports the following properties:
+```javascript
+{
+  counters:[],             // array of counters as string
+  hosts:[],                // array of hosts as strings
+  sampleInterval: Number,  // Number indicating how many seconds between metric samples (-si), default is 1
+  sampleCount: Number      // Number indicating how many sample to run (-sc)
+}
+```
+
 
 The `data` object logged to the console:
 

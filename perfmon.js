@@ -32,6 +32,15 @@ function init(host, options, pstream) {
 	}
 
 	typePerf = hosts[host];
+	
+	if (options.sampleInterval) {
+        typePerf.sampleInterval = options.sampleInterval;
+    }
+
+    if (options.sampleCount) {
+        typePerf.sampleCount = options.sampleCount;
+    }
+	
 	pstream.attach(typePerf);
 
 	// this is wrong. if the current typeperf ALREADY contains the new
